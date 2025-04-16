@@ -1,0 +1,17 @@
+{
+  "name": "workshop-building-automated-tests-with-wordpress-playground",
+  "version": "1.0.0",
+  "description": "This repository contains the code and instructions for the workshop \"Building Automated Tests with WordPress Playground\" for WordCamp EU 2025.",
+  "scripts": {
+    "test": "vitest run && npx playwright test",
+    "test:integration": "vitest",
+    "test:e2e": "npx playwright test --ui"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.14.1",
+    "vitest": "^3.1.1"
+  }
+}
