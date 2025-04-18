@@ -59,6 +59,7 @@ npm test
   - Check if endpoint exists
   - Check if endpoint returns expected message
   - Check if endpoint is available only to admins
+  - Check if input is sanitized
 
 ### End-to-end tests
 
