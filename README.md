@@ -22,7 +22,7 @@ Optionally [Git](https://git-scm.com/downloads), but if you don't want to use Gi
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/bgrgicak/workshop-building-automated-tests-with-wordpress-playground
+git clone https://github.com/bgrgicak/wceu-playground-tester
 ```
 
 2. Setup the Node.js environment:
@@ -56,7 +56,7 @@ npm test
 
 ### Integration tests
 
-- Response message function (`wbatwp_hello_response_message`)
+- Response message function (`wceupt_hello_response_message`)
 - Rest API endpoint
   - Check if endpoint exists
   - Check if endpoint returns expected message
