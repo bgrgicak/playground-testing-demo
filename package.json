@@ -1,12 +1,12 @@
 {
-  "name": "workshop-building-automated-tests-with-wordpress-playground",
+  "name": "wceu-playground-tester",
   "version": "1.0.0",
   "description": "This repository contains the code and instructions for the workshop \"Building Automated Tests with WordPress Playground\" for WordCamp EU 2025.",
   "scripts": {
     "test": "vitest run && npx playwright test",
     "test:integration": "vitest",
     "test:e2e": "npx playwright test --ui",
-    "server": "node ./node_modules/@wp-playground/cli/cli.js server --mount=.:/wordpress/wp-content/plugins/workshop-building-automated-tests-with-wordpress-playground"
+    "server": "node ./node_modules/@wp-playground/cli/cli.js server --mount=.:/wordpress/wp-content/plugins/wceu-playground-tester"
   },
   "author": "",
   "license": "ISC",

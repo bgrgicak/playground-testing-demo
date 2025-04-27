@@ -1,32 +1,32 @@
 <?php
 
+namespace WCEUPT;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-function wbatwp_get_messages() {
-    return get_option(WBATWP_OPTIONS_KEY);
-}
+require_once plugin_dir_path(__FILE__) . 'api.php';
 
-function wbatwp_add_admin_menu() {
+function add_admin_menu() {
     add_menu_page(
         'Workshop Tests',
         'Workshop Tests',
         'manage_options',
         'workshop-tests',
-        'wbatwp_admin_page',
+        'WCEUPT\admin_page',
         'dashicons-admin-generic',
         30
     );
 }
-add_action('admin_menu', 'wbatwp_add_admin_menu');
+add_action('admin_menu', 'WCEUPT\add_admin_menu');
 
-function wbatwp_admin_page() {
+function admin_page() {
     ?>
     <div class="wrap" style="max-width: 200px; display: flex; flex-direction: column; gap: 10px;">
         <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
         <ul id="api-responses">
-            <?php foreach (wbatwp_get_messages() as $message) : ?>
+            <?php foreach (get_messages() as $message) : ?>
                 <li><?php echo esc_html($message); ?></li>
             <?php endforeach; ?>
         </ul>
@@ -48,7 +48,7 @@ function wbatwp_admin_page() {
                 const formData = new FormData();
                 formData.append('name', name);
                 const response = await fetch(
-                    `<?php echo esc_url_raw(rest_url('wbatwp/v1/hello')); ?>`,
+                    `<?php echo esc_url_raw(rest_url('wceupt/v1/hello')); ?>`,
                     {
                         method: 'POST',
                         credentials: 'same-origin',

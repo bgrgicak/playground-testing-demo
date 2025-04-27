@@ -1,15 +1,17 @@
 <?php
 
+namespace WCEUPT;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-const WBATWP_OPTIONS_KEY = 'wbatwp_options';
+const OPTIONS_KEY = 'wceupt_messages';
 
-function wbatwp_register_rest_routes() {
-    register_rest_route('wbatwp/v1', '/hello/', array(
+function register_rest_routes() {
+    register_rest_route('wceupt/v1', '/hello/', array(
         'methods' => 'POST',
-        'callback' => 'wbatwp_hello_endpoint',
+        'callback' => 'WCEUPT\hello_endpoint',
         'permission_callback' => function() {
             return current_user_can('manage_options');
         },
@@ -21,21 +23,28 @@ function wbatwp_register_rest_routes() {
         )
     ));
 }
-add_action('rest_api_init', 'wbatwp_register_rest_routes');
+add_action('rest_api_init', 'WCEUPT\register_rest_routes');
 
-function wbatwp_hello_endpoint($request) {
+function hello_endpoint($request) {
     $name = $request->get_param('name');
-    // append message to a options entry
-    $new_message = wbatwp_hello_response_message($name);
-    $options = get_option(WBATWP_OPTIONS_KEY);
-    $options[] = $new_message;
-    update_option(WBATWP_OPTIONS_KEY, $options);
+    $new_message = hello_response_message($name);
+    save_message($new_message);
     return array(
         'success' => true,
         'message' => $new_message
     );
 }
 
-function wbatwp_hello_response_message($message) {
+function hello_response_message($message) {
     return "User says: $message";
+}
+
+function get_messages() {
+    return get_option(OPTIONS_KEY, array());
+}
+
+function save_message($message) {
+    $options = get_messages();
+    $options[] = $message;
+    update_option(OPTIONS_KEY, $options);
 }

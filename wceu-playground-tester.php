@@ -6,13 +6,15 @@
  * Author: Workshop
  */
 
+namespace WCEUPT;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
-
-function wbatwp_init() {
-    require_once plugin_dir_path(__FILE__) . 'lib/admin-page.php';
+function init() {
+    require_once plugin_dir_path(__FILE__) . 'lib/admin.php';
     require_once plugin_dir_path(__FILE__) . 'lib/api.php';
 }
-add_action('init', 'wbatwp_init');
+
+add_action('init', 'WCEUPT\init');
