@@ -12,8 +12,10 @@ Once we have all tests working we will add a GitHub action to run these tests on
 
 ## Requirements:
 
-- [nvm (Node Version Manager)](https://github.com/nvm-sh/nvm#installing-and-updating)
-- [git](https://git-scm.com/downloads)
+You will need Node.js 18 with npm on your machine.
+It's possible to install it using [nvm (Node Version Manager)](https://github.com/nvm-sh/nvm#installing-and-updating) or install Node.js from [Node.js website](https://nodejs.org/en/download/).
+
+Optionally [Git](https://git-scm.com/downloads), but if you don't want to use Git, you can download the project as a zip file, or from a USB drive that will be provided during the workshop.
 
 ## Development setup:
 
