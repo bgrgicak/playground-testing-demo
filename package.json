@@ -17,9 +17,6 @@
   },
   "dependencies": {
     "@php-wasm/node": "^1.0.28",
-    "@wp-playground/blueprints": "https://wpcomplaygroundpackages.wpcomstaging.com/packages/v1.0.30/@wp-playground-blueprints-1.0.30.tar.gz",
-    "@wp-playground/cli": "https://wpcomplaygroundpackages.wpcomstaging.com/packages/v1.0.30/@wp-playground-cli-1.0.30.tar.gz",
-    "@wp-playground/wordpress": "https://wpcomplaygroundpackages.wpcomstaging.com/packages/v1.0.30/@wp-playground-wordpress-1.0.30.tar.gz",
-    "@wp-playground/wordpress-builds": "^0.9.19"
+    "@wp-playground/cli": "https://wpcomplaygroundpackages.wpcomstaging.com/packages/v1.0.30/@wp-playground-cli-1.0.30.tar.gz"
   }
 }

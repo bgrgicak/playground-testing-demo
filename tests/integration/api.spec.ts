@@ -3,11 +3,9 @@ import {
   expect,
   describe,
   beforeEach,
-  afterEach,
   afterAll,
   beforeAll,
 } from "vitest";
-import { defineWpConfigConsts, resetData } from "@wp-playground/blueprints";
 import {
   type PHPRequest,
   type PHPRequestHandler,
@@ -28,22 +26,6 @@ const requestFollowRedirects = async (
   return response;
 };
 
-const login = async (
-  handler: PHPRequestHandler,
-  username: string = "admin"
-) => {
-  await defineWpConfigConsts(await handler.getPrimaryPhp(), {
-    consts: {
-      PLAYGROUND_FORCE_AUTO_LOGIN_ENABLED: true,
-    },
-  });
-
-  const response = await requestFollowRedirects(handler, {
-    url: "/wp-admin/?playground_force_auto_login_as_user=admin",
-  });
-  return response.httpStatusCode === 200;
-};
-
 const getRestAuthHeaders = async (handler: PHPRequestHandler, php: PHP) => {
   if (!php.fileExists("/wordpress/get_rest_auth_data.php")) {
     await php.writeFile(
@@ -57,13 +39,11 @@ const getRestAuthHeaders = async (handler: PHPRequestHandler, php: PHP) => {
       echo json_encode(
         array(
           'nonce' => wp_create_nonce('wp_rest'),
-          'cookies' => implode('; ', $cookieArray)
+          'cookie' => implode('; ', $cookieArray)
         )
       );`
     );
   }
-
-  await login(handler);
   const nonceResponse = await handler.request({
     url: "/get_rest_auth_data.php",
   });
@@ -86,6 +66,7 @@ describe("Workshop Tests", () => {
       ],
       login: true,
       blueprint: {
+        login: true,
         steps: [
           {
             step: "activatePlugin",
@@ -98,7 +79,13 @@ describe("Workshop Tests", () => {
     php = await handler.getPrimaryPhp();
   });
   beforeEach(async () => {
-    await resetData(php, {});
+    await php.run({
+      code: `
+        <?php
+        require_once '/wordpress/wp-load.php';
+        delete_option('wceupt_messages');
+      `,
+    });
   });
   afterAll(async () => {
     if (cliServer) {
@@ -131,9 +118,7 @@ describe("Workshop Tests", () => {
     expect(result.json.message).toBe("User says: John Doe");
   });
   test("Should load wp-admin page", async () => {
-    await login(handler);
-
-    const response = await handler.request({
+    const response = await requestFollowRedirects(handler, {
       url: "/wp-admin/admin.php?page=workshop-tests",
     });
     expect(response.text).toContain("<h1>Workshop Tests</h1>");
