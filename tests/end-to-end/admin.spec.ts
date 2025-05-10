@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { PHPRequestHandler, PHP } from "@php-wasm/universal";
+import { runPlayground } from "../playground";
 
 test.describe("Workshop Tests", () => {
   let cliServer: any;
@@ -7,23 +8,7 @@ test.describe("Workshop Tests", () => {
   let php: PHP;
 
   test.beforeEach(async () => {
-    const { runCLI } = await import("@wp-playground/cli");
-    cliServer = await runCLI({
-      command: "server",
-      mount: [
-        ".:/wordpress/wp-content/plugins/wceu-playground-tester",
-        "./debug.log:/wordpress/wp-content/debug.log",
-      ],
-      blueprint: {
-        login: true,
-        steps: [
-          {
-            step: "activatePlugin",
-            pluginPath: "/wordpress/wp-content/plugins/wceu-playground-tester",
-          },
-        ],
-      },
-    });
+    cliServer = await runPlayground();
     handler = cliServer.requestHandler;
     php = await handler.getPrimaryPhp();
   });

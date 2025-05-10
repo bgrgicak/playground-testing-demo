@@ -10,8 +10,8 @@ import {
   type PHPRequestHandler,
   type PHP,
 } from "@php-wasm/universal";
-import { runCLI, RunCLIServer } from "@wp-playground/cli";
-
+import { RunCLIServer } from "@wp-playground/cli";
+import { runPlayground } from "../playground";
 const getRestAuthHeaders = async (handler: PHPRequestHandler, php: PHP) => {
   if (!php.fileExists("/wordpress/get_rest_auth_data.php")) {
     await php.writeFile(
@@ -44,23 +44,7 @@ describe("Workshop Tests", () => {
   let handler: PHPRequestHandler;
   let php: PHP;
   beforeAll(async () => {
-    cliServer = await runCLI({
-      command: "server",
-      mount: [
-        ".:/wordpress/wp-content/plugins/wceu-playground-tester",
-        "./debug.log:/wordpress/wp-content/debug.log",
-      ],
-      login: true,
-      blueprint: {
-        login: true,
-        steps: [
-          {
-            step: "activatePlugin",
-            pluginPath: "/wordpress/wp-content/plugins/wceu-playground-tester",
-          },
-        ],
-      },
-    });
+    cliServer = await runPlayground();
     handler = cliServer.requestHandler;
     php = await handler.getPrimaryPhp();
   });
