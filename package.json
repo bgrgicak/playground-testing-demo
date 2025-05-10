@@ -17,6 +17,6 @@
   },
   "dependencies": {
     "@php-wasm/node": "^1.0.28",
-    "@wp-playground/cli": "https://wpcomplaygroundpackages.wpcomstaging.com/packages/v1.0.30/@wp-playground-cli-1.0.30.tar.gz"
+    "@wp-playground/cli": "http://127.0.0.1:4000/wp-content/a8822063/@wp-playground/cli.tar.gz"
   }
 }
