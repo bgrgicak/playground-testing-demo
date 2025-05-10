@@ -1,4 +1,5 @@
 {
+    "login": true,
     "steps": [
         {
             "step": "activatePlugin",
