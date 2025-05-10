@@ -7,24 +7,10 @@ import {
   beforeAll,
 } from "vitest";
 import {
-  type PHPRequest,
   type PHPRequestHandler,
   type PHP,
 } from "@php-wasm/universal";
 import { runCLI, RunCLIServer } from "@wp-playground/cli";
-
-const requestFollowRedirects = async (
-  handler: PHPRequestHandler,
-  request: PHPRequest
-) => {
-  let response = await handler.request(request);
-  while (response.httpStatusCode === 302) {
-    response = await handler.request({
-      url: response.headers["location"][0],
-    });
-  }
-  return response;
-};
 
 const getRestAuthHeaders = async (handler: PHPRequestHandler, php: PHP) => {
   if (!php.fileExists("/wordpress/get_rest_auth_data.php")) {
@@ -118,9 +104,12 @@ describe("Workshop Tests", () => {
     expect(result.json.message).toBe("User says: John Doe");
   });
   test("Should load wp-admin page", async () => {
-    const response = await requestFollowRedirects(handler, {
-      url: "/wp-admin/admin.php?page=workshop-tests",
-    });
+    const response = await handler.request(
+      {
+        url: "/wp-admin/admin.php?page=workshop-tests",
+      },
+      true
+    );
     expect(response.text).toContain("<h1>Workshop Tests</h1>");
   });
 
