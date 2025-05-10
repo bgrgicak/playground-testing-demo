@@ -6,7 +6,7 @@
   "scripts": {
     "test": "vitest run && npx playwright test --config=tests/end-to-end/playwright.config.ts",
     "test:integration": "vitest",
-    "test:e2e": "npx playwright test --ui"
+    "test:e2e": "npx playwright test --ui --config=tests/end-to-end/playwright.config.ts"
   },
   "author": "",
   "license": "ISC",
