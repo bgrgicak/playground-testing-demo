@@ -6,8 +6,7 @@
   "scripts": {
     "test": "vitest run && npx playwright test --config=tests/end-to-end/playwright.config.ts",
     "test:integration": "vitest",
-    "test:e2e": "npx playwright test --ui",
-    "server": "node ./node_modules/@wp-playground/cli/cli.js server --mount=.:/wordpress/wp-content/plugins/wceu-playground-tester --blueprint=./blueprint.json"
+    "test:e2e": "npx playwright test --ui"
   },
   "author": "",
   "license": "ISC",
