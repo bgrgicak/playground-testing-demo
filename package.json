@@ -6,7 +6,8 @@
   "scripts": {
     "test": "vitest run && npx playwright test --config=tests/end-to-end/playwright.config.ts",
     "test:integration": "vitest",
-    "test:e2e": "npx playwright test --ui --config=tests/end-to-end/playwright.config.ts"
+    "test:e2e": "npx playwright test --ui --config=tests/end-to-end/playwright.config.ts",
+    "server": "node ./node_modules/@wp-playground/cli/cli.js server --mount=.:/wordpress/wp-content/plugins/wceu-playground-tester --mount=./debug.log:/wordpress/wp-content/debug.log --blueprint=tests/blueprint.json"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +15,6 @@
     "@playwright/test": "^1.51.1",
     "@types/node": "^22.14.1",
     "vitest": "^3.1.1",
-    "@wp-playground/cli": "http://127.0.0.1:4000/wp-content/a8822063/@wp-playground/cli.tar.gz"
+    "@wp-playground/cli": "^1.0.29"
   }
 }
