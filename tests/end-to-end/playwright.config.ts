@@ -1,4 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
+
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+/**
+ * Playground requires __filename and __dirname to be set.
+ * This is a workaround to set them correctly.
+ */
+global.__filename = path.join(fileURLToPath(import.meta.url), '..');
+global.__dirname = dirname(__filename);
 
 /**
  * Read environment variables from file.

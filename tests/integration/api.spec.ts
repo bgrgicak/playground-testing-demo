@@ -9,9 +9,21 @@ import {
 import {
   type PHPRequestHandler,
   type PHP,
+  PHPRequest,
 } from "@php-wasm/universal";
 import { RunCLIServer } from "@wp-playground/cli";
 import { runPlayground } from "../playground";
+
+const requestFollowRedirects = async (handler: PHPRequestHandler, request: PHPRequest) => {
+  let response = await handler.request(request);
+  while ([301, 302].includes(response.httpStatusCode) && response.headers.location && response.headers.location.length > 0) {
+    response = await handler.request({
+      url: response.headers['location'][0],
+    });
+  }
+  return response;
+};
+
 const getRestAuthHeaders = async (handler: PHPRequestHandler, php: PHP) => {
   if (!php.fileExists("/wordpress/get_rest_auth_data.php")) {
     await php.writeFile(
@@ -30,9 +42,7 @@ const getRestAuthHeaders = async (handler: PHPRequestHandler, php: PHP) => {
       );`
     );
   }
-  const nonceResponse = await handler.request({
-    url: "/get_rest_auth_data.php",
-  });
+  const nonceResponse = await requestFollowRedirects(handler, { url: "/get_rest_auth_data.php" });
   return {
     "X-WP-Nonce": nonceResponse.json.nonce,
     cookie: nonceResponse.json.cookies,
@@ -88,32 +98,37 @@ describe("Workshop Tests", () => {
     expect(result.json.message).toBe("User says: John Doe");
   });
   test("Should load wp-admin page", async () => {
-    const response = await handler.request(
+    const response = await requestFollowRedirects(
+      handler,
       {
         url: "/wp-admin/admin.php?page=workshop-tests",
-      },
-      true
+      }
     );
     expect(response.text).toContain("<h1>Workshop Tests</h1>");
   });
 
   test("Should fail to get API endpoint response for non-logged in user", async () => {
-    const response = await handler.request({
-      url: `/wp-json/wceupt/v1/hello`,
-      method: "POST",
-      body: { name: "John Doe" },
-    });
+    const response = await requestFollowRedirects(
+      handler,
+      {
+        url: "/wp-json/wceupt/v1/hello",
+        method: "POST",
+        body: { name: "John Doe" },
+      }
+    );
     expect(response.httpStatusCode).toBe(401);
   });
   test("Should get API endpoint response for logged in user", async () => {
     const authHeaders = await getRestAuthHeaders(handler, php);
-    const apiResponse = await handler.request({
-      url: `/wp-json/wceupt/v1/hello`,
-      method: "POST",
-      headers: authHeaders,
-      body: { name: "John Doe" },
-    });
-
+    const apiResponse = await requestFollowRedirects(
+      handler,
+      {
+        url: "/wp-json/wceupt/v1/hello",
+        method: "POST",
+        headers: authHeaders,
+        body: { name: "John Doe" },
+      }
+    );
     expect(apiResponse.httpStatusCode).toBe(200);
     expect(apiResponse.json.success).toBe(true);
     expect(apiResponse.json.message).toContain("User says: John Doe");
@@ -121,23 +136,28 @@ describe("Workshop Tests", () => {
 
   test("Should fail to get API endpoint response if name is not provided", async () => {
     const authHeaders = await getRestAuthHeaders(handler, php);
-    const apiResponse = await handler.request({
-      url: `/wp-json/wceupt/v1/hello`,
-      method: "POST",
-      headers: authHeaders,
-    });
-
+    const apiResponse = await requestFollowRedirects(
+      handler,
+      {
+        url: "/wp-json/wceupt/v1/hello",
+        method: "POST",
+        headers: authHeaders,
+      }
+    );
     expect(apiResponse.httpStatusCode).toBe(400);
   });
 
   test("Should sanitize API request input", async () => {
     const authHeaders = await getRestAuthHeaders(handler, php);
-    const apiResponse = await handler.request({
-      url: `/wp-json/wceupt/v1/hello`,
-      method: "POST",
-      headers: authHeaders,
-      body: { name: '<script>alert("XSS")</script>' },
-    });
+    const apiResponse = await requestFollowRedirects(
+      handler,
+      {
+        url: "/wp-json/wceupt/v1/hello",
+        method: "POST",
+        headers: authHeaders,
+        body: { name: '<script>alert("XSS")</script>' },
+      }
+    );
 
     expect(apiResponse.httpStatusCode).toBe(200);
     expect(apiResponse.json.success).toBe(true);
@@ -146,8 +166,8 @@ describe("Workshop Tests", () => {
 
   test("Should save message after API request", async () => {
     const authHeaders = await getRestAuthHeaders(handler, php);
-    await handler.request({
-      url: `/wp-json/wceupt/v1/hello`,
+    await requestFollowRedirects(handler, {
+      url: "/wp-json/wceupt/v1/hello",
       method: "POST",
       headers: authHeaders,
       body: { name: "John Doe" },
