@@ -1,4 +1,4 @@
-name: Integration Tests
+name: CI Tests
 
 on:
     push:
@@ -24,3 +24,9 @@ jobs:
 
     - name: Run integration tests
       run: npm run test:integration
+
+    - name: Setup Playwright
+      run: npx playwright install --with-deps
+
+    - name: Run End-to-End tests
+      run: npm run test:e2e
