@@ -12,7 +12,7 @@ Once we have all tests working we will add a GitHub action to run these tests on
 
 ## Requirements:
 
-You will need Node.js 18 with npm on your machine.
+You will need `Node.js 20` with `npm 5.2.0` or higher on your machine.
 It's possible to install it using [nvm (Node Version Manager)](https://github.com/nvm-sh/nvm#installing-and-updating) or install Node.js from [Node.js website](https://nodejs.org/en/download/).
 
 Optionally [Git](https://git-scm.com/downloads), but if you don't want to use Git, you can download the project as a zip file, or from a USB drive that will be provided during the workshop.
@@ -22,7 +22,7 @@ Optionally [Git](https://git-scm.com/downloads), but if you don't want to use Gi
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/bgrgicak/wceu-playground-tester
+git clone https://github.com/bgrgicak/playground-testing-demo
 ```
 
 2. Setup the Node.js environment:
@@ -38,19 +38,38 @@ nvm use
 npm install
 ```
 
-4. Run the WordPress site
-
-TODO: update to real command
+3.1 Install Playwright:
 
 ```bash
-bun ~/Projects/wordpress-playground/packages/playground/cli/src/cli.ts server --autoMount
+npx playwright install --with-deps
+```
+
+4. Run the WordPress site
+
+```bash
+npx @wp-playground/cli server --mount=.:/wordpress/wp-content/plugins/
 ```
 
 5. Run the tests:
 
 ```bash
-npm test
+npm run test
 ```
+
+5.1 Run tests in watch mode:
+
+```bash
+npm run test:integration
+```
+
+5.3 Run end-to-end tests:
+
+```bash
+npm run test:e2e
+```
+
+
+5.2 Run tests in CI mode:
 
 ## What are we building?
 
