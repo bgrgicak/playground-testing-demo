@@ -73,6 +73,13 @@ npm run test:e2e
 
 ## What are we building?
 
+### Local development server
+
+- [ ] Run the local development server using Playground CLI
+  - [ ] Mount the plugin code in the WordPress site
+  - [ ] Add support for a debug log file
+  - [ ] Configure the WordPress site using a Blueprint
+
 ### Integration tests
 
 - [ ] Check if the plugin is active
