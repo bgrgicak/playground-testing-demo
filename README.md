@@ -75,21 +75,23 @@ npm run test:e2e
 
 ### Integration tests
 
-- Response message function (`wceupt_hello_response_message`)
-- Rest API endpoint
-  - Check if endpoint exists
-  - Check if endpoint returns expected message
-  - Check if endpoint is available only to admins
-  - Check if input is sanitized
+- [ ] Check if the plugin is active
+- [ ] Response message function (`WCEUPT\\hello_response_message`)
+- [ ] Check if the `/wp-admin/admin.php?page=workshop-tests` WP-admin page loads
+- [ ] Rest API endpoint `/wp-json/wceupt/v1/hello`
+  - [ ] Confirm the API endpoint fails when not authenticated
+  - [ ] Confirm the API endpoint returns expected response when authenticated
+  - [ ] Confirm the API endpoint fails if the `message` argument isn't provided
+  - [ ] Confirm the API endpoint sanitizes the `message` argument
+  - [ ] Confirm the API endpoint saves the message to the database
 
 ### End-to-end tests
 
-- Admin page
-  - Check if page loads
-  - Check if the form works
-  - Check if the data persists after a page reload
+- [ ] Admin page
+  - [ ] Check if `/wp-admin/admin.php?page=workshop-tests` page loads
+  - [ ] Check if the message is displayed after submitting the form
+  - [ ] Check if the message is persisted after a page reload
 
 ### GitHub Actions
 
-- Run tests on every commit
-- Run tests on every pull request
+- [ ] Run tests on every commit
