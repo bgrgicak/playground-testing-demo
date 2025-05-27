@@ -10,6 +10,8 @@ We will run tests using WordPress Playground, so they can run inside the WordPre
 To start we will fork a plugin from GitHub and learn how to run it locally using the Playground CLI. After that, we will implement integration and end-to-end tests for our plugin using Playground.
 Once we have all tests working we will add a GitHub action to run these tests on every commit in GitHub.
 
+If you want to see the final result, you can check the `main` branch, or you can check the `start` branch, which is the starting point for the workshop.
+
 ## Requirements:
 
 You will need `Node.js 20` with `npm 5.2.0` or higher on your machine.
