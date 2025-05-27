@@ -7,14 +7,14 @@
     "test": "vitest run && npx playwright test --config=tests/end-to-end/playwright.config.ts",
     "test:integration": "vitest",
     "test:e2e": "npx playwright test --ui --config=tests/end-to-end/playwright.config.ts",
-    "server": "node ./node_modules/@wp-playground/cli/cli.js server --mount=.:/wordpress/wp-content/plugins/wceu-playground-tester --mount=./debug.log:/wordpress/wp-content/debug.log --blueprint=tests/blueprint.json"
+    "server": "npx @wp-playground/cli server --mount=.:/wordpress/wp-content/plugins/wceu-playground-tester --mount=./debug.log:/wordpress/wp-content/debug.log --blueprint=tests/blueprint.json"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.51.1",
     "@types/node": "^22.14.1",
-    "vitest": "^3.1.1",
-    "@wp-playground/cli": "^1.0.29"
+    "@wp-playground/cli": "^1.0.29",
+    "vitest": "^3.1.1"
   }
 }

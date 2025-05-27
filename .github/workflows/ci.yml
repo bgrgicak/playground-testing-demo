@@ -1,0 +1,32 @@
+name: CI Tests
+
+on:
+    push:
+      branches: [ main, master ]
+    pull_request:
+      branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run integration tests
+      run: npm run test:integration
+
+    - name: Setup Playwright
+      run: npx playwright install --with-deps
+
+    - name: Run End-to-End tests
+      run: npx playwright test --config=tests/end-to-end/playwright.config.ts
