@@ -29,4 +29,4 @@ jobs:
       run: npx playwright install --with-deps
 
     - name: Run End-to-End tests
-      run: npm run test:e2e -- --ci
+      run: npx playwright test --config=tests/end-to-end/playwright.config.ts
