@@ -14,6 +14,6 @@
     "@playwright/test": "^1.51.1",
     "@types/node": "^22.14.1",
     "vitest": "^3.1.1",
-    "@wp-playground/cli": "http://127.0.0.1:4000/wp-content/a8822063/@wp-playground/cli.tar.gz"
+    "@wp-playground/cli": "^1.0.29"
   }
 }
