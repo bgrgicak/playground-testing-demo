@@ -22,7 +22,7 @@ Optionally [Git](https://git-scm.com/downloads), but if you don't want to use Gi
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/bgrgicak/playground-testing-demo
+git clone -b start https://github.com/bgrgicak/playground-testing-demo
 ```
 
 2. Setup the Node.js environment:
