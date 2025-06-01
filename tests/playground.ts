@@ -5,7 +5,7 @@ import path from "path";
 export const runPlayground = async () => {
     const blueprint = JSON.parse(
         await readFile(
-            path.join(__dirname, "blueprint.json"),
+            path.resolve("tests/blueprint.json"),
             "utf8"
         )
     );
