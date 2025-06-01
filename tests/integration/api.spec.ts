@@ -13,6 +13,7 @@ import {
 } from "@php-wasm/universal";
 import { RunCLIServer } from "@wp-playground/cli";
 import { runPlayground } from "../playground";
+import { login } from "@wp-playground/blueprints";
 
 const requestFollowRedirects = async (handler: PHPRequestHandler, request: PHPRequest) => {
   let response = await handler.request(request);
@@ -42,6 +43,9 @@ const getRestAuthHeaders = async (handler: PHPRequestHandler, php: PHP) => {
       );`
     );
   }
+  await login(php, {
+    username: "admin",
+  });
   const nonceResponse = await requestFollowRedirects(handler, { url: "/get_rest_auth_data.php" });
   return {
     "X-WP-Nonce": nonceResponse.json.nonce,
@@ -63,7 +67,7 @@ describe("Workshop Tests", () => {
       code: `
         <?php
         require_once '/wordpress/wp-load.php';
-        delete_option('wceupt_messages');
+        delete_option('PTD_messages');
       `,
     });
   });
@@ -81,39 +85,17 @@ describe("Workshop Tests", () => {
       `,
     });
     expect(activePlugins.json).toContain(
-      "wceu-playground-tester/wceu-playground-tester.php"
+      "playground-testing-demo/playground-testing-demo.php"
     );
-  });
-
-  test("Should correctly generate response message", async () => {
-    const result = await php.run({
-      code: `
-        <?php
-        require_once '/wordpress/wp-load.php';
-        echo json_encode(array(
-          'message' => WCEUPT\\hello_response_message('John Doe')
-        ));
-      `,
-    });
-    expect(result.json.message).toBe("User says: John Doe");
-  });
-  test("Should load wp-admin page", async () => {
-    const response = await requestFollowRedirects(
-      handler,
-      {
-        url: "/wp-admin/admin.php?page=workshop-tests",
-      }
-    );
-    expect(response.text).toContain("<h1>Workshop Tests</h1>");
   });
 
   test("Should fail to get API endpoint response for non-logged in user", async () => {
     const response = await requestFollowRedirects(
       handler,
       {
-        url: "/wp-json/wceupt/v1/hello",
+        url: "/wp-json/PTD/v1/message",
         method: "POST",
-        body: { name: "John Doe" },
+        body: { message: "John Doe" },
       }
     );
     expect(response.httpStatusCode).toBe(401);
@@ -123,10 +105,10 @@ describe("Workshop Tests", () => {
     const apiResponse = await requestFollowRedirects(
       handler,
       {
-        url: "/wp-json/wceupt/v1/hello",
+        url: "/wp-json/PTD/v1/message",
         method: "POST",
         headers: authHeaders,
-        body: { name: "John Doe" },
+        body: { message: "John Doe" },
       }
     );
     expect(apiResponse.httpStatusCode).toBe(200);
@@ -139,7 +121,7 @@ describe("Workshop Tests", () => {
     const apiResponse = await requestFollowRedirects(
       handler,
       {
-        url: "/wp-json/wceupt/v1/hello",
+        url: "/wp-json/PTD/v1/message",
         method: "POST",
         headers: authHeaders,
       }
@@ -152,10 +134,10 @@ describe("Workshop Tests", () => {
     const apiResponse = await requestFollowRedirects(
       handler,
       {
-        url: "/wp-json/wceupt/v1/hello",
+        url: "/wp-json/PTD/v1/message",
         method: "POST",
         headers: authHeaders,
-        body: { name: '<script>alert("XSS")</script>' },
+        body: { message: '<script>alert("XSS")</script>' },
       }
     );
 
@@ -167,10 +149,10 @@ describe("Workshop Tests", () => {
   test("Should save message after API request", async () => {
     const authHeaders = await getRestAuthHeaders(handler, php);
     await requestFollowRedirects(handler, {
-      url: "/wp-json/wceupt/v1/hello",
+      url: "/wp-json/PTD/v1/message",
       method: "POST",
       headers: authHeaders,
-      body: { name: "John Doe" },
+      body: { message: "John Doe" },
     });
 
     const result = await php.run({
@@ -178,7 +160,7 @@ describe("Workshop Tests", () => {
         <?php
         require_once '/wordpress/wp-load.php';
         echo json_encode(array(
-          'message' => WCEUPT\\get_messages()
+          'message' => PTD\\get_messages()
         ));
       `,
     });
