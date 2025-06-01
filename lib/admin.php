@@ -1,6 +1,6 @@
 <?php
 
-namespace WCEUPT;
+namespace PTD;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -14,12 +14,12 @@ function add_admin_menu() {
         'Workshop Tests',
         'manage_options',
         'workshop-tests',
-        'WCEUPT\admin_page',
+        'PTD\admin_page',
         'dashicons-admin-generic',
         30
     );
 }
-add_action('admin_menu', 'WCEUPT\add_admin_menu');
+add_action('admin_menu', 'PTD\add_admin_menu');
 
 function admin_page() {
     ?>
@@ -33,7 +33,7 @@ function admin_page() {
         <div class="form-wrap">
             <form id="hello-form" class="form-table">
                 <div class="form-field" style="display: flex; flex-direction: row; gap: 10px;">
-                    <input type="text" id="name" name="name" placeholder="Enter a message" required>
+                    <input type="text" id="message" name="message" placeholder="Enter a message" required>
                     <button type="submit" class="button button-primary">Send</button>
                 </div>
             </form>
@@ -43,12 +43,12 @@ function admin_page() {
     jQuery(document).ready(function($) {
         $('#hello-form').on('submit', async function(e) {
             e.preventDefault();
-            const name = $('#name').val();
+            const message = $('#message').val();
             try {
                 const formData = new FormData();
-                formData.append('name', name);
+                formData.append('message', message);
                 const response = await fetch(
-                    `<?php echo esc_url_raw(rest_url('wceupt/v1/hello')); ?>`,
+                    `<?php echo esc_url_raw(rest_url('v1/message')); ?>`,
                     {
                         method: 'POST',
                         credentials: 'same-origin',
@@ -61,7 +61,7 @@ function admin_page() {
                 const data = await response.json();
                 if (data.success) {
                     $('#api-responses').append(`<li>${data.message}</li>`);
-                    $('#name').val('');
+                    $('#message').val('');
                 } else {
                     console.error('API request failed:', data.message);
                 }

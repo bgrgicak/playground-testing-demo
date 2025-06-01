@@ -1,34 +1,39 @@
 <?php
 
-namespace WCEUPT;
+namespace PTD;
 
 if (!defined('ABSPATH')) {
     exit;
 }
 
-const OPTIONS_KEY = 'wceupt_messages';
+const OPTIONS_KEY = 'PTD_messages';
 
 function register_rest_routes() {
-    register_rest_route('wceupt/v1', '/hello/', array(
+    register_rest_route('PTD/v1', '/hello/', array(
         'methods' => 'POST',
-        'callback' => 'WCEUPT\hello_endpoint',
+        'callback' => 'PTD\hello_endpoint',
         'permission_callback' => function() {
             return current_user_can('manage_options');
         },
         'args' => array(
-            'name' => array(
+            'message' => array(
                 'required' => true,
                 'sanitize_callback' => 'sanitize_text_field'
             )
         )
     ));
 }
-add_action('rest_api_init', 'WCEUPT\register_rest_routes');
+add_action('rest_api_init', 'PTD\register_rest_routes');
 
 function hello_endpoint($request) {
-    $name = $request->get_param('name');
-    $new_message = hello_response_message($name);
-    save_message($new_message);
+    $message = $request->get_param('message');
+    $new_message = hello_response_message($message);
+    if (false ===   save_message($new_message)) {
+        return array(
+            'success' => false,
+            'message' => 'Failed to save message'
+        );
+    }
     return array(
         'success' => true,
         'message' => $new_message
@@ -46,5 +51,5 @@ function get_messages() {
 function save_message($message) {
     $options = get_messages();
     $options[] = $message;
-    update_option(OPTIONS_KEY, $options);
+    return update_option(OPTIONS_KEY, $options);
 }
