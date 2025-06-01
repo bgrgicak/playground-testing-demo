@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { PHPRequestHandler, PHP } from "@php-wasm/universal";
 import { runPlayground } from "../playground";
+import { login } from "@wp-playground/blueprints";
 
 test.describe("Workshop Tests", () => {
   let cliServer: any;
@@ -11,6 +12,12 @@ test.describe("Workshop Tests", () => {
     cliServer = await runPlayground();
     handler = cliServer.requestHandler;
     php = await handler.getPrimaryPhp();
+    await login(
+      php,
+      {
+        username: "admin",
+      }
+    );
   });
 
   test.afterEach(async () => {

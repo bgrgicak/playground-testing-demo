@@ -12,7 +12,7 @@ export const runPlayground = async () => {
     return await runCLI({
         command: "server",
         mount: [
-            ".:/wordpress/wp-content/plugins/wceu-playground-tester",
+            ".:/wordpress/wp-content/plugins/playground-testing-demo",
         ],
         blueprint,
     });
