@@ -9,49 +9,9 @@ import {
 import {
   type PHPRequestHandler,
   type PHP,
-  PHPRequest,
 } from "@php-wasm/universal";
 import { RunCLIServer } from "@wp-playground/cli";
-import { runPlayground } from "../playground";
-import { login } from "@wp-playground/blueprints";
-
-const requestFollowRedirects = async (handler: PHPRequestHandler, request: PHPRequest) => {
-  let response = await handler.request(request);
-  while ([301, 302].includes(response.httpStatusCode) && response.headers.location && response.headers.location.length > 0) {
-    response = await handler.request({
-      url: response.headers['location'][0],
-    });
-  }
-  return response;
-};
-
-const getRestAuthHeaders = async (handler: PHPRequestHandler, php: PHP) => {
-  if (!php.fileExists("/wordpress/get_rest_auth_data.php")) {
-    await php.writeFile(
-      "/wordpress/get_rest_auth_data.php",
-      `<?php
-      require_once '/wordpress/wp-load.php';
-      $cookieArray = [];
-      foreach ($_COOKIE as $key => $value) {
-          $cookieArray[] = $key . '=' . urlencode($value);
-      }
-      echo json_encode(
-        array(
-          'nonce' => wp_create_nonce('wp_rest'),
-          'cookie' => implode('; ', $cookieArray)
-        )
-      );`
-    );
-  }
-  await login(php, {
-    username: "admin",
-  });
-  const nonceResponse = await requestFollowRedirects(handler, { url: "/get_rest_auth_data.php" });
-  return {
-    "X-WP-Nonce": nonceResponse.json.nonce,
-    cookie: nonceResponse.json.cookies,
-  };
-};
+import { getAuthHeaders, requestFollowRedirects, runPlayground } from "../playground";
 
 describe("Workshop Tests", () => {
   let cliServer: RunCLIServer;
@@ -101,7 +61,7 @@ describe("Workshop Tests", () => {
     expect(response.httpStatusCode).toBe(401);
   });
   test("Should get API endpoint response for logged in user", async () => {
-    const authHeaders = await getRestAuthHeaders(handler, php);
+    const authHeaders = await getAuthHeaders(handler);
     const apiResponse = await requestFollowRedirects(
       handler,
       {
@@ -117,7 +77,7 @@ describe("Workshop Tests", () => {
   });
 
   test("Should fail to get API endpoint response if name is not provided", async () => {
-    const authHeaders = await getRestAuthHeaders(handler, php);
+    const authHeaders = await getAuthHeaders(handler);
     const apiResponse = await requestFollowRedirects(
       handler,
       {
@@ -130,7 +90,7 @@ describe("Workshop Tests", () => {
   });
 
   test("Should sanitize API request input", async () => {
-    const authHeaders = await getRestAuthHeaders(handler, php);
+    const authHeaders = await getAuthHeaders(handler);
     const apiResponse = await requestFollowRedirects(
       handler,
       {
@@ -147,7 +107,7 @@ describe("Workshop Tests", () => {
   });
 
   test("Should save message after API request", async () => {
-    const authHeaders = await getRestAuthHeaders(handler, php);
+    const authHeaders = await getAuthHeaders(handler);
     await requestFollowRedirects(handler, {
       url: "/wp-json/PTD/v1/message",
       method: "POST",
