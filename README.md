@@ -90,7 +90,7 @@ npm run test:e2e
 ### Integration tests
 
 - [ ] Check if the plugin is active
-- [ ] Rest API endpoint `POST` `/wp-json/v1/message`
+- [ ] Rest API endpoint `POST` `/wp-json/PTD/v1/message`
   - [ ] Confirm the API endpoint fails when not authenticated
   - [ ] Confirm the API endpoint returns expected response when authenticated
   - [ ] Confirm the API endpoint fails if the `message` argument isn't provided
