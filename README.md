@@ -37,7 +37,7 @@ nvm use
 3. Install the dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 3.1 Install Playwright:
@@ -70,7 +70,6 @@ npm run test:integration
 npm run test:e2e
 ```
 
-
 5.2 Run tests in CI mode:
 
 ## What are we building?
@@ -79,20 +78,7 @@ npm run test:e2e
 
 - [ ] Run the local development server using Playground CLI
   - [ ] Mount the plugin code in the WordPress site
-  - [ ] Add support for a debug log file
   - [ ] Configure the WordPress site using a Blueprint
-
-### Integration tests
-
-- [ ] Check if the plugin is active
-- [ ] Response message function (`WCEUPT\\hello_response_message`)
-- [ ] Check if the `/wp-admin/admin.php?page=workshop-tests` WP-admin page loads
-- [ ] Rest API endpoint `/wp-json/wceupt/v1/hello`
-  - [ ] Confirm the API endpoint fails when not authenticated
-  - [ ] Confirm the API endpoint returns expected response when authenticated
-  - [ ] Confirm the API endpoint fails if the `message` argument isn't provided
-  - [ ] Confirm the API endpoint sanitizes the `message` argument
-  - [ ] Confirm the API endpoint saves the message to the database
 
 ### End-to-end tests
 
@@ -100,6 +86,16 @@ npm run test:e2e
   - [ ] Check if `/wp-admin/admin.php?page=workshop-tests` page loads
   - [ ] Check if the message is displayed after submitting the form
   - [ ] Check if the message is persisted after a page reload
+
+### Integration tests
+
+- [ ] Check if the plugin is active
+- [ ] Rest API endpoint `POST` `/wp-json/v1/message`
+  - [ ] Confirm the API endpoint fails when not authenticated
+  - [ ] Confirm the API endpoint returns expected response when authenticated
+  - [ ] Confirm the API endpoint fails if the `message` argument isn't provided
+  - [ ] Confirm the API endpoint sanitizes the `message` argument
+  - [ ] Confirm the API endpoint saves the message to the database
 
 ### GitHub Actions
 

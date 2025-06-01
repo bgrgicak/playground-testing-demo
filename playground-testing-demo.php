@@ -6,7 +6,7 @@
  * Author: Workshop
  */
 
-namespace WCEUPT;
+namespace PTD;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -17,4 +17,4 @@ function init() {
     require_once plugin_dir_path(__FILE__) . 'lib/api.php';
 }
 
-add_action('init', 'WCEUPT\init');
+add_action('init', 'PTD\init');

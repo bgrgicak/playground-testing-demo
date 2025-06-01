@@ -1,9 +1,0 @@
-{
-    "login": true,
-    "steps": [
-        {
-            "step": "activatePlugin",
-            "pluginPath": "/wordpress/wp-content/plugins/wceu-playground-tester"
-        }
-    ]
-}
