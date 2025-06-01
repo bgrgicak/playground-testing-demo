@@ -77,29 +77,29 @@ npm run test:e2e
 
 ### Local development server
 
-- [ ] Run the local development server using Playground CLI
-  - [ ] Mount the plugin code in the WordPress site
+- [x] Run the local development server using Playground CLI
+  - [x] Mount the plugin code in the WordPress site
   - [ ] Add support for a debug log file
-  - [ ] Configure the WordPress site using a Blueprint
+  - [x] Configure the WordPress site using a Blueprint
 
 ### Integration tests
 
-- [ ] Check if the plugin is active
+- [x] Check if the plugin is active
 - [ ] Response message function (`WCEUPT\\hello_response_message`)
 - [ ] Check if the `/wp-admin/admin.php?page=workshop-tests` WP-admin page loads
 - [ ] Rest API endpoint `/wp-json/wceupt/v1/hello`
-  - [ ] Confirm the API endpoint fails when not authenticated
-  - [ ] Confirm the API endpoint returns expected response when authenticated
-  - [ ] Confirm the API endpoint fails if the `message` argument isn't provided
-  - [ ] Confirm the API endpoint sanitizes the `message` argument
+  - [x] Confirm the API endpoint fails when not authenticated
+  - [x] Confirm the API endpoint returns expected response when authenticated
+  - [x] Confirm the API endpoint fails if the `message` argument isn't provided
+  - [x] Confirm the API endpoint sanitizes the `message` argument
   - [ ] Confirm the API endpoint saves the message to the database
 
 ### End-to-end tests
 
 - [ ] Admin page
-  - [ ] Check if `/wp-admin/admin.php?page=workshop-tests` page loads
-  - [ ] Check if the message is displayed after submitting the form
-  - [ ] Check if the message is persisted after a page reload
+  - [x] Check if `/wp-admin/admin.php?page=workshop-tests` page loads
+  - [x] Check if the message is displayed after submitting the form
+  - [x] Check if the message is persisted after a page reload
 
 ### GitHub Actions
 
