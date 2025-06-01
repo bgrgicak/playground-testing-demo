@@ -48,7 +48,7 @@ function admin_page() {
                 const formData = new FormData();
                 formData.append('message', message);
                 const response = await fetch(
-                    `<?php echo esc_url_raw(rest_url('v1/message')); ?>`,
+                    `<?php echo esc_url_raw(rest_url('PTD/v1/message')); ?>`,
                     {
                         method: 'POST',
                         credentials: 'same-origin',

@@ -9,9 +9,9 @@ if (!defined('ABSPATH')) {
 const OPTIONS_KEY = 'PTD_messages';
 
 function register_rest_routes() {
-    register_rest_route('PTD/v1', '/hello/', array(
+    register_rest_route('PTD/v1', '/message/', array(
         'methods' => 'POST',
-        'callback' => 'PTD\hello_endpoint',
+        'callback' => 'PTD\message_endpoint',
         'permission_callback' => function() {
             return current_user_can('manage_options');
         },
@@ -25,9 +25,9 @@ function register_rest_routes() {
 }
 add_action('rest_api_init', 'PTD\register_rest_routes');
 
-function hello_endpoint($request) {
+function message_endpoint($request) {
     $message = $request->get_param('message');
-    $new_message = hello_response_message($message);
+    $new_message = get_response_message($message);
     if (false ===   save_message($new_message)) {
         return array(
             'success' => false,
@@ -40,7 +40,7 @@ function hello_endpoint($request) {
     );
 }
 
-function hello_response_message($message) {
+function get_response_message($message) {
     return "User says: $message";
 }
 
