@@ -13,7 +13,7 @@ import {
 import { runCLI, RunCLIServer } from "@wp-playground/cli";
 import { login } from "@wp-playground/blueprints";
 import { readFileSync } from "fs";
-import path from "path";
+import { resolve } from "path";
 
 const getAuthHeaders = async (handler: PHPRequestHandler) => {
   const php = await handler.getPrimaryPhp();
@@ -46,7 +46,7 @@ describe("Workshop Tests", () => {
   let apiUrl;
   beforeAll(async () => {
     const blueprint = JSON.parse(
-      readFileSync(path.resolve("blueprint.json"), "utf8")
+      readFileSync(resolve("./blueprint.json"), "utf8")
     );
     cliServer = await runCLI({
       command: "server",

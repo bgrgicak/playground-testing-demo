@@ -3,7 +3,7 @@ import { PHPRequestHandler, PHP } from "@php-wasm/universal";
 import { runCLI } from "@wp-playground/cli";
 import { login } from "@wp-playground/blueprints";
 import { readFileSync } from "fs";
-import path from "path";
+import { resolve } from "path";
 
 test.describe("Workshop Tests", () => {
   let cliServer: any;
@@ -12,7 +12,7 @@ test.describe("Workshop Tests", () => {
 
   test.beforeEach(async () => {
     const blueprint = JSON.parse(
-      readFileSync(path.resolve("blueprint.json"), "utf8")
+      readFileSync(resolve("./blueprint.json"), "utf8")
     );
     cliServer = await runCLI({
       command: "server",
