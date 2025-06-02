@@ -4,5 +4,5 @@
 .DS_Store
 
 # WordPress
-/debug.log
+debug.log
 node_modules/.vite/results.json

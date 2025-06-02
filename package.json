@@ -4,8 +4,8 @@
   "description": "This repository contains the code and instructions for the workshop \"Building Automated Tests with WordPress Playground\" for WordCamp EU 2025.",
   "type": "module",
   "scripts": {
-    "test": "vitest run && npx playwright test --config=tests/end-to-end/playwright.config.ts",
-    "test:integration": "vitest",
+    "test": "vitest run --config=tests/integration/vitest.config.ts && npx playwright test --config=tests/end-to-end/playwright.config.ts",
+    "test:integration": "vitest --config=tests/integration/vitest.config.ts",
     "test:e2e": "npx playwright test --ui --config=tests/end-to-end/playwright.config.ts",
     "server": "npx @wp-playground/cli server --mount=.:/wordpress/wp-content/plugins/playground-testing-demo --mount=./debug.log:/wordpress/wp-content/debug.log --blueprint=blueprint.json"
   },
