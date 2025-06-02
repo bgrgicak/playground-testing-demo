@@ -1,7 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { PHPRequestHandler, PHP } from "@php-wasm/universal";
-import { runPlayground } from "../playground";
+import { runCLI } from "@wp-playground/cli";
 import { login } from "@wp-playground/blueprints";
+import { readFileSync } from "fs";
+import path from "path";
 
 test.describe("Workshop Tests", () => {
   let cliServer: any;
@@ -9,15 +11,20 @@ test.describe("Workshop Tests", () => {
   let php: PHP;
 
   test.beforeEach(async () => {
-    cliServer = await runPlayground();
+    const blueprint = JSON.parse(
+      readFileSync(path.resolve("blueprint.json"), "utf8")
+    );
+    cliServer = await runCLI({
+      command: "server",
+      mount: [".:/wordpress/wp-content/plugins/playground-testing-demo"],
+      blueprint,
+      quiet: true,
+    });
     handler = cliServer.requestHandler;
     php = await handler.getPrimaryPhp();
-    await login(
-      php,
-      {
-        username: "admin",
-      }
-    );
+    await login(php, {
+      username: "admin",
+    });
   });
 
   test.afterEach(async () => {

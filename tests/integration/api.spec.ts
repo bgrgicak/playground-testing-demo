@@ -10,8 +10,38 @@ import {
   type PHPRequestHandler,
   type PHP,
 } from "@php-wasm/universal";
-import { RunCLIServer } from "@wp-playground/cli";
-import { getAuthHeaders, runPlayground } from "../playground";
+import { runCLI, RunCLIServer } from "@wp-playground/cli";
+import { login } from "@wp-playground/blueprints";
+import { readFileSync } from "fs";
+import path from "path";
+
+const getAuthHeaders = async (handler: PHPRequestHandler) => {
+  const php = await handler.getPrimaryPhp();
+  if (!(await php.fileExists("/wordpress/get_rest_auth_data.php"))) {
+    await php.writeFile(
+      "/wordpress/get_rest_auth_data.php",
+      `<?php
+            require_once '/wordpress/wp-load.php';
+            $cookie= '';
+            foreach ($_COOKIE as $name => $value) {
+                $cookieArray .= $name . '=' . $value . '; ';
+            }
+            echo json_encode(
+                array(
+                    'X-WP-Nonce' => wp_create_nonce('wp_rest'),
+                    'Cookie' => $cookie
+                )
+            );
+            `
+    );
+  }
+
+  await login(php, {
+    username: "admin",
+  });
+  const response = await fetch(handler.absoluteUrl + "/get_rest_auth_data.php");
+  return await response.json();
+};
 
 describe("Workshop Tests", () => {
   let cliServer: RunCLIServer;
@@ -19,7 +49,15 @@ describe("Workshop Tests", () => {
   let php: PHP;
   let apiUrl;
   beforeAll(async () => {
-    cliServer = await runPlayground();
+    const blueprint = JSON.parse(
+      readFileSync(path.resolve("blueprint.json"), "utf8")
+    );
+    cliServer = await runCLI({
+      command: "server",
+      mount: [".:/wordpress/wp-content/plugins/playground-testing-demo"],
+      blueprint,
+      quiet: true,
+    });
     handler = cliServer.requestHandler;
     php = await handler.getPrimaryPhp();
     apiUrl = new URL("/wp-json/PTD/v1/message", handler.absoluteUrl);
@@ -29,7 +67,7 @@ describe("Workshop Tests", () => {
       code: `
         <?php
         require_once '/wordpress/wp-load.php';
-        delete_option('PTD_messages');
+        delete_option(PTD\\OPTIONS_KEY);
       `,
     });
   });

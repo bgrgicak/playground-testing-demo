@@ -7,7 +7,7 @@
     "test": "vitest run && npx playwright test --config=tests/end-to-end/playwright.config.ts",
     "test:integration": "vitest",
     "test:e2e": "npx playwright test --ui --config=tests/end-to-end/playwright.config.ts",
-    "server": "npx @wp-playground/cli server --mount=.:/wordpress/wp-content/plugins/playground-testing-demo --mount=./debug.log:/wordpress/wp-content/debug.log --blueprint=tests/blueprint.json"
+    "server": "npx @wp-playground/cli server --mount=.:/wordpress/wp-content/plugins/playground-testing-demo --mount=./debug.log:/wordpress/wp-content/debug.log --blueprint=blueprint.json"
   },
   "author": "",
   "license": "ISC",
