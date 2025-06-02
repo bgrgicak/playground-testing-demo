@@ -88,7 +88,7 @@ describe("Workshop Tests", () => {
   test("Should fail to get API endpoint response for non-logged in user", async () => {
     const formData = new FormData();
     formData.append("message", "John Doe");
-    const response = await fetch(apiUrl.toString(), {
+    const response = await fetch(apiUrl, {
       method: "POST",
       body: formData,
     });
@@ -98,14 +98,11 @@ describe("Workshop Tests", () => {
     const authHeaders = await getAuthHeaders(handler);
     const formData = new FormData();
     formData.append("message", "John Doe");
-    const apiResponse = await fetch(
-      handler.absoluteUrl + "/wp-json/PTD/v1/message",
-      {
-        method: "POST",
-        headers: authHeaders,
-        body: formData,
-      }
-    );
+    const apiResponse = await fetch(apiUrl, {
+      method: "POST",
+      headers: authHeaders,
+      body: formData,
+    });
     const responseJson = await apiResponse.json();
     expect(apiResponse.status).toBe(200);
     expect(responseJson).toMatchObject({
@@ -116,7 +113,7 @@ describe("Workshop Tests", () => {
 
   test("Should fail to get API endpoint response if name is not provided", async () => {
     const authHeaders = await getAuthHeaders(handler);
-    const apiResponse = await fetch(apiUrl.toString(), {
+    const apiResponse = await fetch(apiUrl, {
       method: "POST",
       headers: authHeaders,
     });
@@ -127,7 +124,7 @@ describe("Workshop Tests", () => {
     const formData = new FormData();
     formData.append("message", "<script>alert('XSS')</script>");
     const authHeaders = await getAuthHeaders(handler);
-    const apiResponse = await fetch(apiUrl.toString(), {
+    const apiResponse = await fetch(apiUrl, {
       method: "POST",
       headers: authHeaders,
       body: formData,
@@ -143,7 +140,7 @@ describe("Workshop Tests", () => {
     const formData = new FormData();
     formData.append("message", "John Doe");
     const authHeaders = await getAuthHeaders(handler);
-    await fetch(apiUrl.toString(), {
+    await fetch(apiUrl, {
       method: "POST",
       headers: authHeaders,
       body: formData,
