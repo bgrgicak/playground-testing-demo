@@ -22,14 +22,10 @@ const getAuthHeaders = async (handler: PHPRequestHandler) => {
       "/wordpress/get_rest_auth_data.php",
       `<?php
             require_once '/wordpress/wp-load.php';
-            $cookie= '';
-            foreach ($_COOKIE as $name => $value) {
-                $cookieArray .= $name . '=' . $value . '; ';
-            }
             echo json_encode(
                 array(
                     'X-WP-Nonce' => wp_create_nonce('wp_rest'),
-                    'Cookie' => $cookie
+                    'Cookie' => http_build_query($_COOKIE)
                 )
             );
             `
