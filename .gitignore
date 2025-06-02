@@ -5,3 +5,4 @@
 
 # WordPress
 /debug.log
+node_modules/.vite/results.json

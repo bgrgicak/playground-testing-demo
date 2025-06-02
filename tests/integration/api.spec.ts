@@ -11,16 +11,18 @@ import {
   type PHP,
 } from "@php-wasm/universal";
 import { RunCLIServer } from "@wp-playground/cli";
-import { getAuthHeaders, requestFollowRedirects, runPlayground } from "../playground";
+import { getAuthHeaders, runPlayground } from "../playground";
 
 describe("Workshop Tests", () => {
   let cliServer: RunCLIServer;
   let handler: PHPRequestHandler;
   let php: PHP;
+  let apiUrl;
   beforeAll(async () => {
     cliServer = await runPlayground();
     handler = cliServer.requestHandler;
     php = await handler.getPrimaryPhp();
+    apiUrl = new URL("/wp-json/PTD/v1/message", handler.absoluteUrl);
   });
   beforeEach(async () => {
     await php.run({
@@ -50,69 +52,67 @@ describe("Workshop Tests", () => {
   });
 
   test("Should fail to get API endpoint response for non-logged in user", async () => {
-    const response = await requestFollowRedirects(
-      handler,
-      {
-        url: "/wp-json/PTD/v1/message",
-        method: "POST",
-        body: { message: "John Doe" },
-      }
-    );
-    expect(response.httpStatusCode).toBe(401);
+    const formData = new FormData();
+    formData.append("message", "John Doe");
+    const response = await fetch(apiUrl.toString(), {
+      method: "POST",
+      body: formData,
+    });
+    expect(response.status).toBe(401);
   });
   test("Should get API endpoint response for logged in user", async () => {
     const authHeaders = await getAuthHeaders(handler);
-    const apiResponse = await requestFollowRedirects(
-      handler,
+    const formData = new FormData();
+    formData.append("message", "John Doe");
+    const apiResponse = await fetch(
+      handler.absoluteUrl + "/wp-json/PTD/v1/message",
       {
-        url: "/wp-json/PTD/v1/message",
         method: "POST",
         headers: authHeaders,
-        body: { message: "John Doe" },
+        body: formData,
       }
     );
-    expect(apiResponse.httpStatusCode).toBe(200);
-    expect(apiResponse.json.success).toBe(true);
-    expect(apiResponse.json.message).toContain("User says: John Doe");
+    const responseJson = await apiResponse.json();
+    expect(apiResponse.status).toBe(200);
+    expect(responseJson).toMatchObject({
+      success: true,
+      message: "User says: John Doe",
+    });
   });
 
   test("Should fail to get API endpoint response if name is not provided", async () => {
     const authHeaders = await getAuthHeaders(handler);
-    const apiResponse = await requestFollowRedirects(
-      handler,
-      {
-        url: "/wp-json/PTD/v1/message",
-        method: "POST",
-        headers: authHeaders,
-      }
-    );
-    expect(apiResponse.httpStatusCode).toBe(400);
+    const apiResponse = await fetch(apiUrl.toString(), {
+      method: "POST",
+      headers: authHeaders,
+    });
+    expect(apiResponse.status).toBe(400);
   });
 
   test("Should sanitize API request input", async () => {
+    const formData = new FormData();
+    formData.append("message", "<script>alert('XSS')</script>");
     const authHeaders = await getAuthHeaders(handler);
-    const apiResponse = await requestFollowRedirects(
-      handler,
-      {
-        url: "/wp-json/PTD/v1/message",
-        method: "POST",
-        headers: authHeaders,
-        body: { message: '<script>alert("XSS")</script>' },
-      }
-    );
+    const apiResponse = await fetch(apiUrl.toString(), {
+      method: "POST",
+      headers: authHeaders,
+      body: formData,
+    });
 
-    expect(apiResponse.httpStatusCode).toBe(200);
-    expect(apiResponse.json.success).toBe(true);
-    expect(apiResponse.json.message).toBe("User says: ");
+    const jsonResponse = await apiResponse.json();
+    expect(apiResponse.status).toBe(200);
+    expect(jsonResponse.success).toBe(true);
+    expect(jsonResponse.message).toBe("User says: ");
   });
 
   test("Should save message after API request", async () => {
+    const formData = new FormData();
+    formData.append("message", "John Doe");
     const authHeaders = await getAuthHeaders(handler);
-    await requestFollowRedirects(handler, {
-      url: "/wp-json/PTD/v1/message",
+    await fetch(apiUrl.toString(), {
       method: "POST",
       headers: authHeaders,
-      body: { message: "John Doe" },
+      body: formData,
     });
 
     const result = await php.run({

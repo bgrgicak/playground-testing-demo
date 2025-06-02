@@ -22,11 +22,11 @@ export const runPlayground = async () => {
 }
 
 export const getAuthHeaders = async (handler: PHPRequestHandler) => {
-    const php = await handler.getPrimaryPhp();
-    if (! await php.fileExists("/wordpress/get_rest_auth_data.php")) {
-        await php.writeFile(
-            "/wordpress/get_rest_auth_data.php",
-            `<?php
+  const php = await handler.getPrimaryPhp();
+  if (!(await php.fileExists("/wordpress/get_rest_auth_data.php"))) {
+    await php.writeFile(
+      "/wordpress/get_rest_auth_data.php",
+      `<?php
             require_once '/wordpress/wp-load.php';
             $cookie= '';
             foreach ($_COOKIE as $name => $value) {
@@ -38,29 +38,13 @@ export const getAuthHeaders = async (handler: PHPRequestHandler) => {
                     'Cookie' => $cookie
                 )
             );
-            `,
-        );
-    }
+            `
+    );
+  }
 
-    await login(php, {
-        username: "admin",
-    });
-    const response = await requestFollowRedirects(handler, { url: "/get_rest_auth_data.php" });
-    return response.json;
-}
-
-export const requestFollowRedirects = async (handler: PHPRequestHandler, request: PHPRequest) => {
-    let response = await handler.request(request);
-    while (
-        [301, 302].includes(response.httpStatusCode) &&
-        response.headers["location"].length === 1
-    ) {
-        response = await requestFollowRedirects(
-            handler,
-            {
-                url: response.headers["location"][0],
-            }
-        );
-    }
-    return response;
+  await login(php, {
+    username: "admin",
+  });
+  const response = await fetch(handler.absoluteUrl + "/get_rest_auth_data.php");
+  return await response.json();
 }
