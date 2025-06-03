@@ -1,4 +1,4 @@
-import { WebSocketServer } from 'ws';
+import type { WebSocketServer } from 'ws';
 export declare function addTCPServerToWebSocketServerClass(wsListenPort: number, WSServer: typeof WebSocketServer): any;
 export interface InboundTcpToWsProxyOptions {
     tcpListenPort: number;
