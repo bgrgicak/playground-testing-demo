@@ -14,6 +14,9 @@ import { runCLI, RunCLIServer } from "@wp-playground/cli";
 import { login } from "@wp-playground/blueprints";
 import { readFileSync } from "fs";
 import { resolve } from "path";
+import makeFetchCookie from 'fetch-cookie'
+
+const fetchCookie = makeFetchCookie(fetch)
 
 const getAuthHeaders = async (handler: PHPRequestHandler) => {
   const php = await handler.getPrimaryPhp();
@@ -25,7 +28,6 @@ const getAuthHeaders = async (handler: PHPRequestHandler) => {
             echo json_encode(
                 array(
                     'X-WP-Nonce' => wp_create_nonce('wp_rest'),
-                    'Cookie' => http_build_query($_COOKIE)
                 )
             );
             `
@@ -35,7 +37,7 @@ const getAuthHeaders = async (handler: PHPRequestHandler) => {
   await login(php, {
     username: "admin",
   });
-  const response = await fetch(handler.absoluteUrl + "/get_rest_auth_data.php");
+  const response = await fetchCookie(handler.absoluteUrl + "/get_rest_auth_data.php");
   return await response.json();
 };
 
@@ -88,7 +90,7 @@ describe("Workshop Tests", () => {
   test("Should fail to get API endpoint response for non-logged in user", async () => {
     const formData = new FormData();
     formData.append("message", "John Doe");
-    const response = await fetch(apiUrl, {
+    const response = await fetchCookie(apiUrl, {
       method: "POST",
       body: formData,
     });
@@ -98,7 +100,7 @@ describe("Workshop Tests", () => {
     const authHeaders = await getAuthHeaders(handler);
     const formData = new FormData();
     formData.append("message", "John Doe");
-    const apiResponse = await fetch(apiUrl, {
+    const apiResponse = await fetchCookie(apiUrl, {
       method: "POST",
       headers: authHeaders,
       body: formData,
@@ -113,7 +115,7 @@ describe("Workshop Tests", () => {
 
   test("Should fail to get API endpoint response if name is not provided", async () => {
     const authHeaders = await getAuthHeaders(handler);
-    const apiResponse = await fetch(apiUrl, {
+    const apiResponse = await fetchCookie(apiUrl, {
       method: "POST",
       headers: authHeaders,
     });
@@ -124,7 +126,7 @@ describe("Workshop Tests", () => {
     const formData = new FormData();
     formData.append("message", "<script>alert('XSS')</script>");
     const authHeaders = await getAuthHeaders(handler);
-    const apiResponse = await fetch(apiUrl, {
+    const apiResponse = await fetchCookie(apiUrl, {
       method: "POST",
       headers: authHeaders,
       body: formData,
@@ -140,7 +142,7 @@ describe("Workshop Tests", () => {
     const formData = new FormData();
     formData.append("message", "John Doe");
     const authHeaders = await getAuthHeaders(handler);
-    await fetch(apiUrl, {
+    await fetchCookie(apiUrl, {
       method: "POST",
       headers: authHeaders,
       body: formData,

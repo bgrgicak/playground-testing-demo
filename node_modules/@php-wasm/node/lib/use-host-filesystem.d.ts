@@ -1,4 +1,4 @@
-import { PHP } from '@php-wasm/universal';
+import type { PHP } from '@php-wasm/universal';
 /**
  * Enables host filesystem usage by mounting root
  * directories (e.g. /, /home, /var) into the in-memory
