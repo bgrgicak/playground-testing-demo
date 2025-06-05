@@ -52,7 +52,12 @@ describe("Workshop Tests", () => {
     );
     cliServer = await runCLI({
       command: "server",
-      mount: [".:/wordpress/wp-content/plugins/playground-testing-demo"],
+      mount: [
+        {
+          hostPath: "./",
+          vfsPath: "/wordpress/wp-content/plugins/playground-testing-demo",
+        },
+      ],
       blueprint,
       quiet: true,
     });
