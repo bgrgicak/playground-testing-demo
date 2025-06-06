@@ -58,19 +58,17 @@ npx @wp-playground/cli server --mount=.:/wordpress/wp-content/plugins/
 npm run test
 ```
 
-5.1 Run tests in watch mode:
+5.1 Run integration tests:
 
 ```bash
 npm run test:integration
 ```
 
-5.3 Run end-to-end tests:
+5.2 Run end-to-end tests:
 
 ```bash
 npm run test:e2e
 ```
-
-5.2 Run tests in CI mode:
 
 ## What are we building?
 
@@ -80,22 +78,20 @@ npm run test:e2e
   - [ ] Mount the plugin code in the WordPress site
   - [ ] Configure the WordPress site using a Blueprint
 
-### [End-to-end tests](https://bero.dev/building-automated-tests-with-wordpress-playground/#e2e)
-
-- [ ] Admin page
-  - [ ] Check if `/wp-admin/admin.php?page=workshop-tests` page loads
-  - [ ] Check if the message is displayed after submitting the form
-  - [ ] Check if the message is persisted after a page reload
-
 ### [Integration tests](https://bero.dev/building-automated-tests-with-wordpress-playground/#integration)
 
 - [ ] Check if the plugin is active
 - [ ] Rest API endpoint `POST` `/wp-json/PTD/v1/message`
   - [ ] Confirm the API endpoint fails when not authenticated
   - [ ] Confirm the API endpoint returns expected response when authenticated
-  - [ ] Confirm the API endpoint fails if the `message` argument isn't provided
-  - [ ] Confirm the API endpoint sanitizes the `message` argument
   - [ ] Confirm the API endpoint saves the message to the database
+
+### [End-to-end tests](https://bero.dev/building-automated-tests-with-wordpress-playground/#e2e)
+
+- [ ] Admin page
+  - [ ] Check if `/wp-admin/admin.php?page=workshop-tests` page loads
+  - [ ] Check if the message is displayed after submitting the form
+  - [ ] Check if the message is persisted after a page reload
 
 ### GitHub Actions
 
