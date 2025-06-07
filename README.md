@@ -74,20 +74,20 @@ npm run test:integration
 
 ### [Local development server](https://bero.dev/building-automated-tests-with-wordpress-playground/#cli)
 
-- [ ] Run the local development server using Playground CLI
-  - [ ] Mount the plugin code in the WordPress site
-  - [ ] Configure the WordPress site using a Blueprint
+- [x] Run the local development server using Playground CLI
+  - [x] Mount the plugin code in the WordPress site
+  - [x] Configure the WordPress site using a Blueprint
 
 ### [End-to-end tests](https://bero.dev/building-automated-tests-with-wordpress-playground/#e2e)
 
-- [ ] Admin page
-  - [ ] Check if `/wp-admin/admin.php?page=workshop-tests` page loads
+- [x] Admin page
+  - [x] Check if `/wp-admin/admin.php?page=workshop-tests` page loads
   - [ ] Check if the message is displayed after submitting the form
   - [ ] Check if the message is persisted after a page reload
 
 ### [Integration tests](https://bero.dev/building-automated-tests-with-wordpress-playground/#integration)
 
-- [ ] Check if the plugin is active
+- [x] Check if the plugin is active
 - [ ] Rest API endpoint `POST` `/wp-json/PTD/v1/message`
   - [ ] Confirm the API endpoint fails when not authenticated
   - [ ] Confirm the API endpoint returns expected response when authenticated
