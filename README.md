@@ -49,7 +49,7 @@ npx playwright install --with-deps
 4. Run the WordPress site
 
 ```bash
-npx @wp-playground/cli server --mount=.:/wordpress/wp-content/plugins/
+npx @wp-playground/cli server --mount=.:/wordpress/wp-content/plugins/playground-testing-demo
 ```
 
 5. Run the tests:
