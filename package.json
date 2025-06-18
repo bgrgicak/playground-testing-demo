@@ -17,5 +17,8 @@
     "@wp-playground/cli": "^1.1.1",
     "fetch-cookie": "^3.1.0",
     "vitest": "^3.1.1"
+  },
+  "dependencies": {
+    "unzipper": "^0.12.3"
   }
 }
