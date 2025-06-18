@@ -1,99 +1,90 @@
 import { runCLI, RunCLIServer } from "@wp-playground/cli";
-import type { PHP, PHPRequestHandler } from "@php-wasm/universal";
-import { existsSync, readFileSync } from "fs";
-import { resolve } from "path";
+import { SupportedPHPVersions, type PHP, type PHPRequestHandler } from "@php-wasm/universal";
+import { copyFileSync, readFileSync, unlinkSync } from "fs";
+import { join, resolve } from "path";
 import { beforeAll, beforeEach, describe, expect, test } from "vitest";
 import { login } from "@wp-playground/blueprints";
+import * as unzipper from "unzipper";
+import { createReadStream } from "fs";
 
-const snapshotPath = "./tests/integration/snapshot.zip";
+const snapshotPath = resolve("./tests/integration/snapshot.zip");
+const snapshotDir = resolve("./tests/integration/snapshot");
+const wpConfigPath = join(snapshotDir, "wordpress", "wp-config.php");
 
-describe.only("Using Snapshots", () => {
+describe("Using Snapshots", () => {
 	let cliServer: RunCLIServer;
 	let handler: PHPRequestHandler;
 	let php: PHP;
 
 	beforeAll(async () => {
-		// Use existing snapshot if it exists
-		if (existsSync(snapshotPath)) {
-			return;
-		}
 		try {
 			await runCLI({
 				command: "build-snapshot",
-				blueprint: {
-					"steps": [
-						{
-							"step": "installTheme",
-							"themeData": {
-								"resource": "wordpress.org/themes",
-								"slug": "pendant"
-							},
-							"options": {
-								"activate": true,
-								"importStarterContent": true
-							}
-						},
-					]
-				},
 				outfile: snapshotPath,
+				quiet: true,
 			});
 		} catch (error) {
 			// runCLI exits with a error that needs to be fixed in Playground
 			// Error: process.exit unexpectedly called with "0"
 		}
+
+		// extract the snapshot zip
+		await createReadStream(snapshotPath)
+			.pipe(unzipper.Extract({ path: snapshotDir }))
+			.promise();
+
+		// Create the wp-config.php file
+		copyFileSync(
+			join(snapshotDir, "wordpress", "wp-config-sample.php"),
+			wpConfigPath
+		);
+
+		// remove the zip file
+		unlinkSync(snapshotPath);
 	});
-	beforeEach(async () => {
-		cliServer = await runCLI({
-			command: "server",
-			mount: [
-				{
-					hostPath: snapshotPath,
-					vfsPath: "/tmp/snapshot.zip",
-				},
-				{
-					hostPath: "./",
-					vfsPath: "/tmp/playground-testing-demo",
-				},
-			],
-			blueprint: {
-				"steps": [
-					{
-						"step": "unzip",
-						"zipFile": {
-							"resource": "vfs",
-							"path": "/tmp/snapshot.zip"
+	SupportedPHPVersions.forEach(phpVersion => {
+		describe(`PHP ${phpVersion}`, () => {
+			beforeEach(async () => {
+				const blueprint = JSON.parse(
+				  readFileSync(resolve("./blueprint.json"), "utf8")
+				);
+				cliServer = await runCLI({
+					command: "server",
+					mountBeforeInstall: [
+						{
+							hostPath: join(snapshotDir, "wordpress"),
+							vfsPath: "/wordpress",
 						},
-						"extractToPath": "/"
-					},
-					// {
-					//     "step": "cp",
-					//     "fromPath": "/tmp/playground-testing-demo",
-					//     "toPath": "/wordpress/wp-content/plugins/playground-testing-demo"
-					// },
-					// {
-					//     "step": "activatePlugin",
-					//     "pluginPath": "/wordpress/wp-content/plugins/playground-testing-demo/playground-testing-demo.php"
-					// },
-				]
-			},
-			// skipSqliteSetup: true,
-			// skipWordPressSetup: true,
-			quiet: true,
+					],
+					blueprint,
+					mount: [
+					  {
+						hostPath: "./",
+						vfsPath: "/wordpress/wp-content/plugins/playground-testing-demo",
+					  },
+					],
+					php: phpVersion,
+					skipWordPressSetup: true,
+					quiet: true,
+				});
+				handler = cliServer.requestHandler;
+				php = await handler.getPrimaryPhp();
+				await login(php, {
+					username: "admin",
+				});
+			});
+			test("Should activate plugin", async () => {
+			  const activePlugins = await php.run({
+				code: `
+				  <?php
+				  require_once '/wordpress/wp-load.php';
+				  echo json_encode(get_option('active_plugins'));
+				`,
+			  });
+			  expect(activePlugins.json).toContain(
+				"playground-testing-demo/playground-testing-demo.php"
+			  );
+			});
 		});
-		handler = cliServer.requestHandler;
-		php = await handler.getPrimaryPhp();
-		await login(php, {
-			username: "admin",
-		});
-	});
-	test("Pendant theme should be active", async () => {
-		const result = await php.run({
-			code: `<?php
-				require_once '/wordpress/wp-load.php';
-				$themes = get_themes();
-				echo json_encode($themes);
-			`,
-		});
-		expect(result.json).toContain("pendant");
 	});
 });

@@ -1,3 +1,5 @@
+node_modules
+
 # Playwright
 /test-results/
 /playwright-report/
@@ -6,4 +8,4 @@
 # WordPress
 debug.log
 node_modules/.vite/results.json
-tests/integration/snapshot.zip
+tests/integration/snapshot
