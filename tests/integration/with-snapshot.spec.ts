@@ -3,7 +3,6 @@ import { SupportedPHPVersions, type PHP, type PHPRequestHandler } from "@php-was
 import { copyFileSync, readFileSync, unlinkSync } from "fs";
 import { join, resolve } from "path";
 import { beforeAll, beforeEach, describe, expect, test } from "vitest";
-import { login } from "@wp-playground/blueprints";
 import * as unzipper from "unzipper";
 import { createReadStream } from "fs";
 
@@ -41,7 +40,8 @@ describe("Using Snapshots", () => {
 
 		// remove the zip file
 		unlinkSync(snapshotPath);
-	});
+	}, 60000); // allow 60 seconds for the snapshot to be created
+
 	SupportedPHPVersions.forEach(phpVersion => {
 		describe(`PHP ${phpVersion}`, () => {
 			beforeEach(async () => {
@@ -69,9 +69,6 @@ describe("Using Snapshots", () => {
 				});
 				handler = cliServer.requestHandler;
 				php = await handler.getPrimaryPhp();
-				await login(php, {
-					username: "admin",
-				});
 			});
 			test("Should activate plugin", async () => {
 			  const activePlugins = await php.run({
