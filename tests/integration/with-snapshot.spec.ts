@@ -1,20 +1,17 @@
 import { runCLI, RunCLIServer } from "@wp-playground/cli";
 import { SupportedPHPVersions, type PHP, type PHPRequestHandler } from "@php-wasm/universal";
-import { copyFileSync, readFileSync, unlinkSync } from "fs";
+import { copyFileSync, unlinkSync } from "fs";
 import { join, resolve } from "path";
-import { beforeAll, beforeEach, describe, expect, test } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, test } from "vitest";
 import * as unzipper from "unzipper";
 import { createReadStream } from "fs";
+import { activatePlugin } from "@wp-playground/blueprints";
 
 const snapshotPath = resolve("./tests/integration/snapshot.zip");
 const snapshotDir = resolve("./tests/integration/snapshot");
 const wpConfigPath = join(snapshotDir, "wordpress", "wp-config.php");
 
-describe("Using Snapshots", () => {
-	let cliServer: RunCLIServer;
-	let handler: PHPRequestHandler;
-	let php: PHP;
-
+describe.only("Using Snapshots", () => {
 	beforeAll(async () => {
 		try {
 			await runCLI({
@@ -44,10 +41,11 @@ describe("Using Snapshots", () => {
 
 	SupportedPHPVersions.forEach(phpVersion => {
 		describe(`PHP ${phpVersion}`, () => {
+			let cliServer: RunCLIServer;
+			let handler: PHPRequestHandler;
+			let php: PHP;
+
 			beforeEach(async () => {
-				const blueprint = JSON.parse(
-				  readFileSync(resolve("./blueprint.json"), "utf8")
-				);
 				cliServer = await runCLI({
 					command: "server",
 					mountBeforeInstall: [
@@ -56,7 +54,13 @@ describe("Using Snapshots", () => {
 							vfsPath: "/wordpress",
 						},
 					],
-					blueprint,
+					/**
+					 * Due to a Playground bug, the build-snapshot command
+					 * hangs if a mount is provided, so we need to mount and
+					 * activate the plugin during every server start.
+					 *
+					 * https://github.com/WordPress/wordpress-playground/pull/2281#issuecomment-2982892591
+					 */
 					mount: [
 					  {
 						hostPath: "./",
@@ -69,6 +73,23 @@ describe("Using Snapshots", () => {
 				});
 				handler = cliServer.requestHandler;
 				php = await handler.getPrimaryPhp();
+
+				/**
+				 * Due to a Playground bug, the build-snapshot command
+				 * hangs if a mount is provided, so we need to mount and
+				 * activate the plugin during every server start.
+				 *
+				 * https://github.com/WordPress/wordpress-playground/pull/2281#issuecomment-2982892591
+				 */
+				await activatePlugin(
+					php,
+					{
+						pluginPath: "/wordpress/wp-content/plugins/playground-testing-demo/playground-testing-demo.php",
+					}
+				);
+			});
+			afterEach(async () => {
+				await cliServer.server.close();
 			});
 			test("Should activate plugin", async () => {
 			  const activePlugins = await php.run({
